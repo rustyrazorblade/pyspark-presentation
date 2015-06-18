@@ -120,24 +120,20 @@ use demo ;
 					</code></pre>
 					</section>
 
+				<section data-markdown="sample_user_table.md"></section>
 				<section>
-					<h2>Create our demo user table</h2>
-					<pre><code data-trim>
+<pre><code data-trim>
+import pyspark_cassandra
 
+conf = SparkConf() \
+    .setAppName("User Food Migration") \
+    .setMaster("spark://127.0.0.1:7077") \
+    .set("spark.cassandra.connection.host", "127.0.0.1")
 
-create TABLE user ( name text PRIMARY KEY,
-    				favorite_food text );
+sc = CassandraSparkContext(conf=conf)
+</code></pre>
 
-insert into user (name, favorite_food) values ('jon', 'bacon');
-insert into user (name, favorite_food) values ('luke', 'pie');
-insert into user (name, favorite_food) values ('patrick', 'pizza');
-insert into user (name, favorite_food) values ('rachel', 'pizza');
-
-create table favorite_foods ( food text, name text,
-		primary key (food, name));
-							</code></pre>
 				</section>
-
 				<section>
 					<h2>Fantastic Ordered List</h2>
 					<ol>
