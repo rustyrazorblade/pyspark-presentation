@@ -52,6 +52,11 @@
 					<h2>What is Spark?</h2>
 
 					<p>Fast and general purpose cluster computing system</p>
+
+					Use when we have more data what fits on a single machine
+				</section>
+				<section>
+						<h2>Languages</h2>
 						<ul>
 							<li>Scala</li>
 							<li>Java</li>
@@ -59,7 +64,6 @@
 							<li class="fragment highlight-red">Python</li>
 						</ul>
 				</section>
-
 				<section>
 					<h2>What can I do with it?</h2>
 					<ul>
@@ -74,6 +78,15 @@
 					<h2>Batch Processing</h2>
 					Operate on entire dataset (or at least a big chunk of it)
 
+
+				</section>
+
+				<section>
+					<h2>RDD</h2>
+					<ul>
+					<li>Resilliant Distributed Dataset <span class="fragment">(it's a big list)</span></li>
+					<li>Use functional concepts like map, filter, reduce</li>
+					<li>Will always pay penalty going from JVM &lt;&gt; Python</li>
 
 				</section>
 
@@ -121,9 +134,11 @@ use demo ;
 					</section>
 
 				<section data-markdown="sample_user_table.md"></section>
-				<section>
+				<section >
+					<h2>Mapping Foods to Users</h2>
 <pre><code data-trim>
-import pyspark_cassandra
+from pyspark_cassandra import CassandraSparkContext, Row
+from pyspark import SparkContext, SparkConf
 
 conf = SparkConf() \
     .setAppName("User Food Migration") \
@@ -131,32 +146,118 @@ conf = SparkConf() \
     .set("spark.cassandra.connection.host", "127.0.0.1")
 
 sc = CassandraSparkContext(conf=conf)
+
+users = sc.cassandraTable("demo", "user")
+favorite_foods = users.map(lambda x: {"food":x['favorite_food'],
+									  "name":x['name']} )
+favorite_foods.saveToCassandra("demo", "favorite_foods")
 </code></pre>
 
 				</section>
+				<section >
+<h2>Migration Results</h2>
+<pre><code data-trim>
+cqlsh:demo> select * from favorite_foods ;
+
+ food  | name
+-------+---------
+ pizza | patrick
+ pizza |  rachel
+   pie |    luke
+ bacon |     jon
+
+(4 rows)
+cqlsh:demo> select * from favorite_foods where food = 'pizza';
+
+ food  | name
+-------+---------
+ pizza | patrick
+ pizza |  rachel
+
+(2 rows)
+</code></pre>
+				</section>
+
 				<section>
-					<h2>Fantastic Ordered List</h2>
-					<ol>
-						<li>One is smaller than...</li>
-						<li>Two is smaller than...</li>
-						<li>Three!</li>
-					</ol>
+<h2>Aggregations</h2>
+<pre><code data-trim>
+u = sc.cassandraTable("demo", "user")
+u.map(lambda x: (x['favorite_food'], 1)).\
+reduceByKey(lambda x, y: x + y).collect()
+</code></pre>
+
+<pre class="fragment"><code data-trim>
+[(u'bacon', 1), (u'pie', 1), (u'pizza', 2)]
+</code></pre>
+
+				</section>
+
+				</section>
+				<section >
+					<h2>DataFrames</h2>
+					<ul>
+					<li>From R language
+					<li>Available in Python via Pandas
+					<li>DataFrames allow for optimized filters, sorting, grouping</li>
+					<li>With Spark, all the data stays in the JVM</li>
+					<li class="fragment">With Cassandra it's still expensive due to JVM &lt;&gt; Python</li>
+					<li class="fragment">But it can be fixed</li>
+					</ul>
+
+
+				</section>
+
+				<section>
+					<h2>DataFrames Example</h2>
+						<pre><code data-trim>
+from pyspark_cassandra import CassandraSparkContext, Row
+from pyspark import SparkContext, SparkConf
+from pyspark.sql import SQLContext # needed for toDF()
+
+users = sc.cassandraTable("demo", "user").toDF()
+food_count = users.select("favorite_food").groupBy("favorite_food").count()
+food_count.collect()
+					</pre></code>
+					<pre class="fragment"><code data-trim>
+[Row(favorite_food=u'bacon', count=1),
+ Row(favorite_food=u'pizza', count=2),
+ Row(favorite_food=u'pie', count=1)]
+					</code></pre>
 				</section>
 
 
-				<section>
-					<h2>Export to PDF</h2>
-					<p>Presentations can be <a href="https://github.com/hakimel/reveal.js#pdf-export">exported to PDF</a>, here's an example:</p>
-					<iframe src="//www.slideshare.net/slideshow/embed_code/42840540" width="445" height="355" frameborder="0" marginwidth="0" marginheight="0" scrolling="no" style="border:3px solid #666; margin-bottom:5px; max-width: 100%;" allowfullscreen> </iframe>
+				<section data-markdown>
+					## SparkSQL
+
+					- Register dataframes as tables
+					- JOIN, GROUP BY
 				</section>
 
-				<section style="text-align: left;">
-					<h1>Thank You</h1>
-					<p>
-						- <a href="http://planetcassandra.org">Download Cassandra</a>
-						- <a href="https://spark.apache.org">Download Spark</a>
-						- <a href="https://datastax.com">Download DataStax Enterprise</a>
-					</p>
+
+				<section data-markdown>
+					## Streaming
+				</section>
+
+				<section data-markdown>
+					## Machine Learning
+				</section>
+
+				<section data-markdown>
+					## Running a Spark Job
+				</section>
+				<section>
+					<h2>Interactive iPython Notebooks</h2>
+				</section>
+
+				<section data-markdown style="text-align: left;">
+					# Get Started!
+
+					Open Source:
+					- <a href="http://planetcassandra.org">Download Cassandra</a>
+					- <a href="https://spark.apache.org">Download Spark</a>
+
+					Integrated solution
+					-  <a href="https://datastax.com">Download DataStax Enterprise</a>
 				</section>
 
 			</div>

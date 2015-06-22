@@ -1,5 +1,6 @@
 from pyspark_cassandra import CassandraSparkContext, Row
 from pyspark import SparkContext, SparkConf
+from pyspark.sql import SQLContext # needed for toDF()
 
 conf = SparkConf() \
     .setAppName("User Food Migration") \
@@ -7,8 +8,7 @@ conf = SparkConf() \
     .set("spark.cassandra.connection.host", "127.0.0.1")
 
 sc = CassandraSparkContext(conf=conf)
+sql = SQLContext(sc)
 
-users = sc.cassandraTable("demo", "user")
-
-favorite_foods = users.map(lambda x: {"food":x['favorite_food'], "name":x['name']} )
-favorite_foods.saveToCassandra("demo", "favorite_foods")
+users = sc.cassandraTable("demo", "user").toDF()
+food_count = users.select("favorite_food").groupBy("favorite_food").count()
