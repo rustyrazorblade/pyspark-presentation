@@ -49,6 +49,31 @@
 				</section>
 
 				<section>
+					<h2>What tools are you already using for data analysis?</h2>
+
+					<ul>
+					 <li class="fragment">NumPy</li>
+					 <li class="fragment">Pandas</li>
+					 <li class="fragment">iPython Notebooks</li>
+					 <li class="fragment">scikit-learn</li>
+					 <li class="fragment">hdf5</li>
+					 <li class="fragment">pybrain</li>
+					</ul>
+				</section>
+
+				<section>
+					<h2>What's the problem?</h2>
+
+					<h4 class="fragment">Great tools</h3>
+					<h4 class="fragment">But not built for big data sets</h3>
+				</section>
+				<section>
+					<h2>Limited to 1 machine</h2>
+					<p class="fragment">What if we have a lot of data?</p>
+					<p class="fragment">What if we use Cassandra?</p>
+					<p class="fragment">We need distributed computing</p>
+				</section>
+				<section>
 					<h2>What is Spark?</h2>
 
 					<p>Fast and general purpose cluster computing system</p>
@@ -182,8 +207,9 @@ cqlsh:demo> select * from favorite_foods where food = 'pizza';
 <h2>Aggregations</h2>
 <pre><code data-trim>
 u = sc.cassandraTable("demo", "user")
+
 u.map(lambda x: (x['favorite_food'], 1)).\
-reduceByKey(lambda x, y: x + y).collect()
+  reduceByKey(lambda x, y: x + y).collect()
 </code></pre>
 
 <pre class="fragment"><code data-trim>
@@ -191,6 +217,11 @@ reduceByKey(lambda x, y: x + y).collect()
 </code></pre>
 
 				</section>
+				<section>
+					<h2>RDDs are cool</h2>
+
+					<p class="fragment">And very powerful</p>
+					<p class="fragment">But kind of annoying</p>
 
 				</section>
 				<section >
@@ -215,7 +246,10 @@ from pyspark import SparkContext, SparkConf
 from pyspark.sql import SQLContext # needed for toDF()
 
 users = sc.cassandraTable("demo", "user").toDF()
-food_count = users.select("favorite_food").groupBy("favorite_food").count()
+
+food_count = users.select("favorite_food").\
+                   groupBy("favorite_food").count()
+
 food_count.collect()
 					</pre></code>
 					<pre class="fragment"><code data-trim>
