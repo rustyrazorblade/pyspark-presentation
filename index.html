@@ -43,7 +43,7 @@
 				<section data-markdown>
 					# Intro to PySpark
 
-					Jon Haddad, DataStax
+					Jon Haddad, Technical Evangelist, DataStax
 
 					[@rustyrazorblade](http://twitter.com/rustyrazorblade)
 				</section>
@@ -174,8 +174,9 @@ conf = SparkConf() \
 sc = CassandraSparkContext(conf=conf)
 
 users = sc.cassandraTable("demo", "user")
-favorite_foods = users.map(lambda x: {"food":x['favorite_food'],
-									  "name":x['name']} )
+favorite_foods = users.map(lambda x:
+			{"food":x['favorite_food'],
+			 "name":x['name']} )
 favorite_foods.saveToCassandra("demo", "favorite_foods")
 </code></pre>
 
@@ -318,23 +319,51 @@ stream.awaitTermination()
 									</code></pre>
 				</section>
 
-				<section data-markdown>
-					## Machine Learning
+				<section>
+					<h2>Machine Learning</h2>
+					<ul>
+						<li class="fragment">Supervised learning</li>
+						<li class="fragment">Unsupervised learning</li>
 				</section>
 
-				<section data-markdown>
-					## Running a Spark Job
+				<section>
+					<h2>Supervised Learning</h2>
+					<ul>
+						<li class="fragment">When we know the inputs and outputs</li>
+						<li class="fragment">Example: Real estate prices</li>
+						<li class="fragment">Take <span class="fragment highlight-red">existing knowledge</span> about houses and prices </li>
+						<li class="fragment">Build a model to predict the <span class="fragment highlight-green">future</span></li>
+
+					</ul>
+				</section>
+				<section>
+					<h2>Unsupervised Learning</h2>
+					<ul>
+						<li class="fragment">When we don't know the output</li>
+						<li class="fragment">Popular usage: discover groups</li>
+					</ul>
+				</section>
+				<section>
+					<img src="kmeans_2d.png"/>
 				</section>
 				<section>
 					<h2>Interactive iPython Notebooks</h2>
-				</section>
 
+					<ul>
+						<li class="fragment">Iterate quickly</li>
+						<li class="fragment">Visualize your data</li>
+					</ul>
+				</section>
+				<section>
+					<img src="notebook.png" />
+				</section>
 				<section data-markdown style="text-align: left;">
 					# Get Started!
 
 					Open Source:
 					- <a href="http://planetcassandra.org">Download Cassandra</a>
 					- <a href="https://spark.apache.org">Download Spark</a>
+					- Cassandra PySpark Repo: https://github.com/TargetHolding/pyspark-cassandra
 
 					Integrated solution
 					-  <a href="https://datastax.com">Download DataStax Enterprise</a>
