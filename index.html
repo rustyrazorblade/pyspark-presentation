@@ -52,7 +52,7 @@
 					<h2>What tools are you already using for data analysis?</h2>
 
 					<ul>
-					 <li class="fragment">NumPy</li>
+					 <li class="fragment">NumPy / SciPy</li>
 					 <li class="fragment">Pandas</li>
 					 <li class="fragment">iPython Notebooks</li>
 					 <li class="fragment">scikit-learn</li>
@@ -66,6 +66,7 @@
 
 					<h4 class="fragment">Great tools</h3>
 					<h4 class="fragment">But not built for big data sets</h3>
+					<p class="fragment">And not real time...</p>
 				</section>
 				<section>
 					<h2>Limited to 1 machine</h2>
@@ -111,7 +112,7 @@
 					<ul>
 					<li>Resilliant Distributed Dataset <span class="fragment">(it's a big list)</span></li>
 					<li>Use functional concepts like map, filter, reduce</li>
-					<li>Will always pay penalty going from JVM &lt;&gt; Python</li>
+					<li>Caveat: Will always pay penalty going from JVM &lt;&gt; Python</li>
 
 				</section>
 
@@ -259,14 +260,28 @@ food_count.collect()
 					</code></pre>
 				</section>
 
-
 				<section data-markdown>
 					## SparkSQL
 
 					- Register dataframes as tables
 					- JOIN, GROUP BY
 				</section>
+				<section>
+					<h2>SparkSQL in Action</h2>
+					<pre><code data-trim>
+sql = SQLContext(sc)
+users = sc.cassandraTable("demo", "user").toDF()
+users.registerTempTable("users")
+sql.sql("""select favorite_food, count(favorite_food)
+            from users group by favorite_food """).collect()
+					</code></pre>
+					<pre class="fragment"><code data-trim>
+[Row(favorite_food=u'bacon', c1=1),
+ Row(favorite_food=u'pizza', c1=2),
+ Row(favorite_food=u'pie', c1=1)]
+					</code></pre>
 
+				</section>
 
 				<section data-markdown>
 					## Streaming
