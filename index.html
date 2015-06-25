@@ -283,8 +283,39 @@ sql.sql("""select favorite_food, count(favorite_food)
 
 				</section>
 
-				<section data-markdown>
-					## Streaming
+				<section >
+					<h2>Streaming</h2>
+
+					<ul>
+						<li class="fragment">Operate on batch windows</li>
+						<li class="fragment">Each batch is a small RDD</li>
+					</ul>
+
+				</section>
+
+				<section>
+					<h2>Pretty picture</h2>
+					<img style='background-color:white' src = "streaming-dstream-window.png" />
+				</section>
+
+				<section>
+					<h2>Streaming</h2>
+				<pre><code data-trim>
+from pyspark.streaming import StreamingContext
+from pyspark.streaming.kafka import KafkaUtils
+
+stream = StreamingContext(sc, 1) # 1 second window
+
+kafka_stream = KafkaUtils.createStream(stream, \
+	                         "localhost:2181", \
+	                         "raw-event-streaming-consumer",
+	                         {"pageviews":1})
+
+# manipulate kafka_stream as an RDD
+
+stream.start()
+stream.awaitTermination()
+									</code></pre>
 				</section>
 
 				<section data-markdown>
